@@ -1,8 +1,7 @@
 var casper = require('casper').create();
-var links;
+var fs = require('fs');
 
 var MYFS_CLASS_SEARCH_URL = 'https://my.fresnostate.edu/psp/mfs/EMPLOYEE/HRMS/c/SA_LEARNER_SERVICES.CLASS_SEARCH.GBL?FolderPath=PORTAL_ROOT_OBJECT.FR_VIEW_SOC.FR_CLASS_SEARCH_GBL2&IsFolder=false&IgnoreParamTempl=FolderPath%2cIsFolder'
-
 
 casper.on('remote.message', function(msg) {
   this.echo('remote message caught: ' + msg);
@@ -58,9 +57,9 @@ casper.withFrame('TargetContent', function() {
   this.click('#CLASS_SRCH_WRK2_SSR_PB_CLASS_SRCH');
 
   this.waitWhileVisible('#WAIT_win0', function(){
-    var courseNumbers = this.evaluate(getCourseNumbers);
-    parseCourses(courseNumbers.slice(0,1), [], function(courseInfos){
-      casper.echo(JSON.stringify(courseInfos));
+    var courseNumbers = casper.evaluate(getCourseNumbers);
+    parseCourses(courseNumbers.slice(0,2), [], function(courseInfos){
+      fs.write('public/courses.json', JSON.stringify(courseInfos));
     });
   });
 });
