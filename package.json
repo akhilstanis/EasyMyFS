@@ -1,0 +1,14 @@
+{
+  "name": "easymyfs",
+  "version": "1.0.0",
+  "description": "Get easy access to course informataion on my.fresnostate.edu fast and quick.",
+  "author": "Akhil Stanislavose",
+  "license": "MIT",
+  "dependencies": {
+    "casperjs": "^1.1.3",
+    "slimerjs": "^0.906.2"
+  },
+  "scripts": {
+    "scrap": "casperjs scrap.js"
+  }
+}
