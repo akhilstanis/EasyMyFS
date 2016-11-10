@@ -1,4 +1,8 @@
-var casper = require('casper').create();
+var casper = require('casper').create({
+  // verbose: true,
+  // logLevel: 'info'
+});
+
 var fs = require('fs');
 
 var MYFS_CLASS_SEARCH_URL = 'https://my.fresnostate.edu/psp/mfs/EMPLOYEE/HRMS/c/SA_LEARNER_SERVICES.CLASS_SEARCH.GBL?FolderPath=PORTAL_ROOT_OBJECT.FR_VIEW_SOC.FR_CLASS_SEARCH_GBL2&IsFolder=false&IgnoreParamTempl=FolderPath%2cIsFolder'
@@ -44,23 +48,37 @@ var parseCourses = function(courseNumbers, previousCourseInfos, callback) {
   } else {
     callback(previousCourseInfos);
   }
-}
+};
+
+var checkMoreThan50Alert = function(){
+  return document.querySelector('#DERIVED_SSE_DSP_SSR_MSG_TEXT').textContent ==  'Your search will return over 50 classes, would you like to continue?';
+};
+
+var parseCourseNumbers = function(){
+  var courseNumbers = casper.evaluate(getCourseNumbers);
+  parseCourses(courseNumbers, [], function(courseInfos){
+    fs.write('public/courses.json', JSON.stringify(courseInfos));
+  });
+};
 
 casper.start(MYFS_CLASS_SEARCH_URL);
 
 casper.withFrame('TargetContent', function() {
-  this.evaluate(function(){
-    document.querySelector('#CLASS_SRCH_WRK2_STRM\\$35\\$').value = '2173'
-    document.querySelector('#SSR_CLSRCH_WRK_SUBJECT\\$0').value = 'CSCI'
+  casper.evaluate(function(){
+    document.querySelector('#CLASS_SRCH_WRK2_STRM\\$35\\$').value = '2173';
+    document.querySelector('#SSR_CLSRCH_WRK_SUBJECT\\$0').value = 'CSCI';
+    document.querySelector('#SSR_CLSRCH_WRK_SSR_OPEN_ONLY\\$chk\\$4').value = 'N';
   });
 
-  this.click('#CLASS_SRCH_WRK2_SSR_PB_CLASS_SRCH');
+  casper.click('#CLASS_SRCH_WRK2_SSR_PB_CLASS_SRCH');
 
-  this.waitWhileVisible('#WAIT_win0', function(){
-    var courseNumbers = casper.evaluate(getCourseNumbers);
-    parseCourses(courseNumbers.slice(0,2), [], function(courseInfos){
-      fs.write('public/courses.json', JSON.stringify(courseInfos));
-    });
+  casper.waitWhileVisible('#WAIT_win0', function(){
+    var hasMoreThan50Alert = casper.evaluate(checkMoreThan50Alert);
+
+    if(hasMoreThan50Alert) {
+      casper.click('#\\#ICSave');
+      casper.waitWhileVisible('#WAIT_win0', parseCourseNumbers);
+    } else parseCourseNumbers();
   });
 });
 
