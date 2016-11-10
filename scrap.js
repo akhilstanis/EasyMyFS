@@ -5,12 +5,11 @@ var MYFS_CLASS_SEARCH_URL = 'https://my.fresnostate.edu/psp/mfs/EMPLOYEE/HRMS/c/
 
 
 casper.on('remote.message', function(msg) {
-    this.echo('remote message caught: ' + msg);
+  this.echo('remote message caught: ' + msg);
 })
 
 casper.on("page.error", function(msg, trace) {
-    this.echo("Error: " + msg);
-    // maybe make it a little fancier with the code from the PhantomJS equivalent
+  this.echo("Error: " + msg);
 });
 
 casper.on("resource.error", function(resourceError) {
@@ -27,7 +26,7 @@ var parseCoursePage = function() {
   return { name: courseName };
 }
 
-var parseCourses = function(courseNumbers, previousCourseInfos) {
+var parseCourses = function(courseNumbers, previousCourseInfos, callback) {
   var courseNumber = courseNumbers.pop();
 
   if(courseNumber) {
@@ -40,11 +39,11 @@ var parseCourses = function(courseNumbers, previousCourseInfos) {
 
       casper.clickLabel('View Search Results');
       casper.waitWhileVisible('#WAIT_win0', function(){
-        parseCourses(courseNumbers, previousCourseInfos);
+        parseCourses(courseNumbers, previousCourseInfos, callback);
       });
     });
   } else {
-    casper.echo(JSON.stringify(previousCourseInfos));
+    callback(previousCourseInfos);
   }
 }
 
@@ -59,18 +58,11 @@ casper.withFrame('TargetContent', function() {
   this.click('#CLASS_SRCH_WRK2_SSR_PB_CLASS_SRCH');
 
   this.waitWhileVisible('#WAIT_win0', function(){
-    var courses = this.evaluate(getCourseNumbers);
-    parseCourses(courses,[]);
+    var courseNumbers = this.evaluate(getCourseNumbers);
+    parseCourses(courseNumbers.slice(0,1), [], function(courseInfos){
+      casper.echo(JSON.stringify(courseInfos));
+    });
   });
 });
-
-// casper.withFrame('TargetContent', function() {
-//   this.capture('screenshot.png');
-// });
-
-// casper.then(function capturing(){
-//   console.log('Baam!');
-//   this.capture('screenshot.png');
-// });
 
 casper.run();
