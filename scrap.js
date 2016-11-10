@@ -4,6 +4,7 @@ var casper = require('casper').create({
 });
 
 var fs = require('fs');
+var spawn = require('child_process').spawn;
 
 var MYFS_CLASS_SEARCH_URL = 'https://my.fresnostate.edu/psp/mfs/EMPLOYEE/HRMS/c/SA_LEARNER_SERVICES.CLASS_SEARCH.GBL?FolderPath=PORTAL_ROOT_OBJECT.FR_VIEW_SOC.FR_CLASS_SEARCH_GBL2&IsFolder=false&IgnoreParamTempl=FolderPath%2cIsFolder'
 
@@ -56,10 +57,14 @@ var checkMoreThan50Alert = function(){
 
 var parseCourseNumbers = function(){
   var courseNumbers = casper.evaluate(getCourseNumbers);
-  parseCourses(courseNumbers, [], function(courseInfos){
+  parseCourses(courseNumbers.slice(0,1), [], function(courseInfos){
     fs.write('public/courses.json', JSON.stringify(courseInfos));
+    spawn('node', 'upload.js');
+    casper.echo('Uploading...');
+    casper.wait(5000);
   });
 };
+
 
 casper.start(MYFS_CLASS_SEARCH_URL);
 
