@@ -57,8 +57,12 @@ var checkMoreThan50Alert = function(){
 
 var parseCourseNumbers = function(){
   var courseNumbers = casper.evaluate(getCourseNumbers);
-  parseCourses(courseNumbers.slice(0,1), [], function(courseInfos){
-    fs.write('public/courses.json', JSON.stringify(courseInfos));
+  parseCourses(courseNumbers, [], function(courseInfos){
+    var data = {
+      timestamp: new Date(),
+      courses: courseInfos
+    };
+    fs.write('public/courses.json', JSON.stringify(data));
     spawn('node', 'upload.js');
     casper.echo('Uploading...');
     casper.wait(5000);
