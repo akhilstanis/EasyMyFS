@@ -27,7 +27,8 @@ var getCourseNumbers = function(){
 
 var parseCoursePage = function() {
   var getText = function(selector) {
-    return document.querySelector(selector).textContent;
+    var el = document.querySelector(selector);
+    return el ? el.textContent : '';
   };
 
   return {
