@@ -1,18 +1,14 @@
 var fs = require('fs');
-var http = require('http')
+var MongoClient = require('mongodb').MongoClient;
 
-var body = fs.readFileSync('public/courses.json', 'utf8');
+MongoClient.connect(process.env.MONGODB_URI, function(err, db) {
+  var courses = db.collection('courses');
 
-var request = new http.ClientRequest({
-    hostname: process.env.HOSTNAME,
-    port: 80,
-    path: "/courses.json?token=" + process.env.AUTH_TOKEN,
-    method: "POST",
-    agent: false,
-    headers: {
-      "Content-Type": "application/json",
-      "Content-Length": Buffer.byteLength(body)
-    }
+  courses.deleteMany({}, function(err,result){
+    var coursesJson = fs.readFileSync('public/courses.json', 'utf8');
+    courses.insert(JSON.parse(coursesJson), function(err,result){
+      console.log('Done!');
+      db.close();
+    });
+  });
 });
-
-request.end(body)

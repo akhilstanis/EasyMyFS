@@ -1,6 +1,6 @@
 var express = require('express');
 var app = express();
-var fs = require('fs');
+var MongoClient = require('mongodb').MongoClient;
 
 app.set('port', (process.env.PORT || 4000));
 app.use(express.static('public'));
@@ -8,15 +8,14 @@ app.use(express.static('public'));
 var bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
-app.post('/courses.json', function (req, res) {
-  if(req.query.token != process.env.AUTH_TOKEN)
-    return res.status(403).end();
-
-  fs.writeFile('public/courses.json', JSON.stringify(req.body), function(){
-    res.end();
+MongoClient.connect(process.env.MONGODB_URI, function(err, db) {
+  app.get('/courses.json', function (req, res) {
+    db.collection('courses').find().toArray(function(err,docs){
+      res.send(JSON.stringify(docs[0]));
+    });
   });
-});
 
-app.listen(app.get('port'), function () {
-  console.log('App listening on port ' + app.get('port') + '...');
+  app.listen(app.get('port'), function () {
+    console.log('App listening on port ' + app.get('port') + '...');
+  });
 });
