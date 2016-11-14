@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>EasyMyFS</title>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript">
+      $(function(){
+        $.getJSON('/courses.json', function(json){
+          var courses = json.courses;
+          $('#results').text(JSON.stringify(courses, null, 2));
+
+          $('#search-box').on('keyup', function(){
+            var query = new RegExp($(this).val());
+            var filteredCourses = courses.filter(function(course){
+              return Object.values(course).join('|').match(query);
+            });
+            $('#results').text(JSON.stringify(filteredCourses, null, 2));
+          });
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <input id="search-box" type="text" style="width:99.5%" placeholder="Enter text to search..." autofocus/>
+    <pre id="results"></pre>
+  </body>
+</html>
