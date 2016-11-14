@@ -6,7 +6,7 @@ var body = fs.readFileSync('public/courses.json', 'utf8');
 var request = new http.ClientRequest({
     hostname: process.env.HOSTNAME,
     port: 80,
-    path: "/courses.json",
+    path: "/courses.json?token=" + process.env.AUTH_TOKEN,
     method: "POST",
     agent: false,
     headers: {
