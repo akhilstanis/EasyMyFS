@@ -78,7 +78,7 @@ var checkMoreThan50Alert = function(){
 
 var parseCourseNumbers = function(){
   var courseNumbers = casper.evaluate(getCourseNumbers);
-  parseCourses(courseNumbers.slice(0,2), [], function(courseInfos){
+  parseCourses(courseNumbers, [], function(courseInfos){
     var data = {
       timestamp: new Date(),
       courses: courseInfos
