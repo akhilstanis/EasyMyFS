@@ -26,8 +26,28 @@ var getCourseNumbers = function(){
 };
 
 var parseCoursePage = function() {
-  var courseName = document.querySelector("#win0divDERIVED_CLSRCH_DESCR200").textContent;
-  return { name: courseName };
+  var getText = function(selector) {
+    return document.querySelector(selector).textContent;
+  };
+
+  return {
+    name: getText('#win0divDERIVED_CLSRCH_DESCR200'),
+    status: getText('#SSR_CLS_DTL_WRK_SSR_DESCRSHORT'),
+    units: getText('#SSR_CLS_DTL_WRK_UNITS_RANGE'),
+    career: getText('#PSXLATITEM_XLATLONGNAME'),
+    dates: getText('#SSR_CLS_DTL_WRK_SSR_DATE_LONG'),
+    grading: getText('#GRADE_BASIS_TBL_DESCRFORMAL'),
+    schedule: getText('#MTG_SCHED\\$0'),
+    room: getText('#MTG_LOC\\$0'),
+    instructor: getText('#MTG_INSTR\\$0'),
+    class_capacity: getText('#SSR_CLS_DTL_WRK_ENRL_CAP'),
+    enrollment_total: getText('#SSR_CLS_DTL_WRK_ENRL_TOT'),
+    available_seats: getText('#SSR_CLS_DTL_WRK_AVAILABLE_SEATS'),
+    wait_list_capacity: getText('#SSR_CLS_DTL_WRK_WAIT_CAP'),
+    wait_list_total: getText('#SSR_CLS_DTL_WRK_WAIT_TOT'),
+    description: getText('#DERIVED_CLSRCH_DESCRLONG'),
+    class_notes: getText('#DERIVED_CLSRCH_SSR_CLASSNOTE_LONG')
+  };
 }
 
 var parseCourses = function(courseNumbers, previousCourseInfos, callback) {
