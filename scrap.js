@@ -84,8 +84,8 @@ var parseCourseNumbers = function(){
       courses: courseInfos
     };
     fs.write('public/courses.json', JSON.stringify(data));
-    spawn('node', 'upload.js');
-    casper.echo('Uploading...');
+    spawn('node', 'store.js');
+    casper.echo('Saving to DB...');
     casper.wait(5000);
   });
 };
