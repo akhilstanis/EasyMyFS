@@ -10,6 +10,11 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
 MongoClient.connect(process.env.MONGODB_URI, function(err, db) {
+  if(err) {
+    console.error('Oops! Could not connect to MongoDB. Are you sure MongoDB is running at ' + process.env.MONGODB_URI);
+    process.exit(1);
+  }
+
   app.get('/courses.json', function (req, res) {
     db.collection('courses').find().toArray(function(err,docs){
       res.send(JSON.stringify(docs[0]));
